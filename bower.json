@@ -1,0 +1,22 @@
+{
+  "name": "angular-service-cache",
+  "version": "0.0.1",
+  "authors": [
+    "Joseph Dotson <jdotson@ibs.com>"
+  ],
+  "description": "a single service for caching promise results",
+  "main": "serviceCache.js",
+  "moduleType": [],
+  "keywords": [
+    "angular"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
