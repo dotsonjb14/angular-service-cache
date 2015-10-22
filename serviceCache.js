@@ -1,5 +1,5 @@
 (function () {
-    angular.module('service-cache')
+    angular.module('service-cache', [])
         .factory('serviceCache', function ($cacheFactory, $q) {
             var cache = $cacheFactory("service-cache");
             return {
