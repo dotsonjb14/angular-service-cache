@@ -33,10 +33,12 @@
                         _remove(key)
                     }, ttl)
                 }
+                return this;
             }
 
             function _remove(key) {
                 delete _cache[key];
+                return this;
             }
 
             function _removeAll() {
@@ -80,10 +82,12 @@
 
         function _put(key, val, ttl) {
             cache.put(key, val, ttl);
+            return this;
         }
 
         function _remove(key) {
             cache.remove(key);
+            return this;
         }
     }
 })();
