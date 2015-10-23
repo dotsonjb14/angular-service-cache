@@ -1,8 +1,8 @@
 (function () {
     angular.module('service-cache', [])
-        .factory('serviceCache', serviceCache());
+        .factory('serviceCache', serviceCache);
 
-    serviceCache.$inject = ["$cacheFactory", "$q"]
+    serviceCache.$inject = ["$cacheFactory", "$q"];
     function serviceCache ($cacheFactory, $q) {
         var cache = $cacheFactory("service-cache");
         return {
@@ -22,15 +22,19 @@
             else {
                 return $q.when(func())
                     .then(function (data) {
-                        cache.put(key, data);
+                        _put(key, data);
                         if(ttl > 0) {
                             setTimeout(function () {
-                                cache.remove(key)
+                                _remove(key)
                             }, ttl)
                         }
                         return data;
                     });
             }
+        }
+
+        function _put(key, val) {
+            cache.put(key, val);
         }
 
         function _remove(key) {
