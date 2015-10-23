@@ -1,0 +1,27 @@
+{
+  "name": "angular-service-cache",
+  "version": "0.0.10",
+  "description": "",
+  "main": "serviceCache.js",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotsonjb14/angular-service-cache.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dotsonjb14/angular-service-cache/issues"
+  },
+  "homepage": "https://github.com/dotsonjb14/angular-service-cache#readme",
+  "devDependencies": {
+    "angular": "^1.4.7",
+    "karma": "^0.13.14",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-mocha": "^0.2.0",
+    "mocha": "^2.3.3",
+    "should": "^7.1.1"
+  }
+}
