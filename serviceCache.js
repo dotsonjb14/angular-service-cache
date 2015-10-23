@@ -16,14 +16,20 @@
                 get: _get,
                 put: _put,
                 remove: _remove,
-                removeAll: _removeAll
+                removeAll: _removeAll,
+                all: _all
             };
+
+            function _all() {
+                return _cache;
+            }
 
             function _get(key) {
                 return _cache[key];
             }
 
             function _put(key, val, ttl) {
+                debugger;
                 _cache[key] = val;
                 if(typeof  ttl === 'undefined') {
                     ttl = 0;
@@ -37,7 +43,18 @@
             }
 
             function _remove(key) {
-                delete _cache[key];
+                if(key instanceof RegExp) {
+                    for(var k in _cache) {
+                        if(key.test(k)) {
+                            delete _cache[k];
+                        }
+                    }
+
+                }
+                else {
+                    delete _cache[key];
+                }
+
                 return this;
             }
 
@@ -57,13 +74,16 @@
             // these are proxies for the cache backend
             put: _put,
             get: _get,
-            remove: _remove
+            remove: _remove,
+            all: _all
+
         };
 
         function _run(func, key, ttl) {
             var val = _get(key);
 
             if (typeof val !== 'undefined') {
+                console.log("loaded");
                 return $q.when(val);
             }
             else {
@@ -88,6 +108,10 @@
         function _remove(key) {
             cache.remove(key);
             return this;
+        }
+
+        function _all() {
+            return cache.all();
         }
     }
 })();
