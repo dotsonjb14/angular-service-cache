@@ -7,8 +7,11 @@
                 remove: _remove
             };
 
-            function _run(func, key) {
+            function _run(func, key, ttl) {
                 var val = cache.get(key);
+                if(typeof  ttl === 'undefined') {
+                    ttl = 0;
+                }
 
                 if (typeof val !== 'undefined') {
                     return $q.when(val);
@@ -17,6 +20,11 @@
                     return $q.when(func())
                         .then(function (data) {
                             cache.put(key, data);
+                            if(ttl > 0) {
+                                setTimeout(function () {
+                                    cache.remove(key)
+                                }, ttl)
+                            }
                             return data;
                         });
                 }
