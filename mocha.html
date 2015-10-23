@@ -13,10 +13,14 @@
 
 <script>mocha.setup('bdd')</script>
 <script src="node_modules/should/should.min.js"></script>
+<script src="node_modules/angular/angular.min.js"></script>
+<script src="node_modules/angular-mocks/angular-mocks.js"></script>
+<script src="serviceCache.js"></script>
+
 <script src="specs.js"></script>
 
 <script>
-    mocha.checkLeaks();
+    //mocha.checkLeaks();
     mocha.globals(['jQuery']);
     mocha.run();
 </script>

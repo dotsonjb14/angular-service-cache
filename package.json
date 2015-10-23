@@ -18,6 +18,7 @@
   "homepage": "https://github.com/dotsonjb14/angular-service-cache#readme",
   "devDependencies": {
     "angular": "^1.4.7",
+    "angular-mocks": "^1.4.7",
     "karma": "^0.13.14",
     "karma-chrome-launcher": "^0.2.1",
     "karma-mocha": "^0.2.0",
