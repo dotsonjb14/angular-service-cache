@@ -29,7 +29,6 @@
             }
 
             function _put(key, val, ttl) {
-                debugger;
                 _cache[key] = val;
                 if(typeof  ttl === 'undefined') {
                     ttl = 0;
@@ -75,6 +74,7 @@
             put: _put,
             get: _get,
             remove: _remove,
+            removeAll: _removeAll,
             all: _all
 
         };
@@ -83,7 +83,6 @@
             var val = _get(key);
 
             if (typeof val !== 'undefined') {
-                console.log("loaded");
                 return $q.when(val);
             }
             else {
@@ -108,6 +107,10 @@
         function _remove(key) {
             cache.remove(key);
             return this;
+        }
+
+        function _removeAll() {
+            cache.removeAll();
         }
 
         function _all() {

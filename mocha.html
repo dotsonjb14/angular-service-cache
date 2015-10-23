@@ -20,8 +20,8 @@
 <script src="specs.js"></script>
 
 <script>
-    //mocha.checkLeaks();
-    mocha.globals(['jQuery']);
+    mocha.checkLeaks();
+    mocha.globals(['jQuery', '$scopeId', 'ngInspector']);
     mocha.run();
 </script>
 </body>
