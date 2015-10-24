@@ -11,7 +11,9 @@
 <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
 <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
 
-<script>mocha.setup('bdd')</script>
+<script>mocha.setup({
+    ui: 'bdd'
+})</script>
 <script src="node_modules/should/should.min.js"></script>
 <script src="node_modules/angular/angular.min.js"></script>
 <script src="node_modules/angular-mocks/angular-mocks.js"></script>
@@ -21,7 +23,7 @@
 
 <script>
     mocha.checkLeaks();
-    mocha.globals(['jQuery', '$scopeId', 'ngInspector']);
+    mocha.globals(['jQuery', '$scopeId', 'ngInspector', 'LiveReload']);
     mocha.run();
 </script>
 </body>

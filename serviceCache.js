@@ -69,6 +69,7 @@
 
         return {
             run: _run,
+            injectCache: _injectCache,
 
             // these are proxies for the cache backend
             put: _put,
@@ -78,6 +79,10 @@
             all: _all
 
         };
+
+        function _injectCache(c) {
+            cache = c;
+        }
 
         function _run(func, key, ttl) {
             var val = _get(key);
