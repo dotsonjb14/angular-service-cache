@@ -69,7 +69,6 @@
                     }
                 }
             }
-
             function _all() {
                 return _cache;
             }
@@ -77,7 +76,7 @@
             function _get(key) {
                 var val = _cache[key];
                 if(typeof val !== "undefined") {
-                    if(val.expires != null && (new Date()).getTime() > val.expires) {
+                    if(val.expires !== null && (new Date()).getTime() > val.expires) {
                         delete _cache[key];
                         return undefined;
                     }
@@ -142,7 +141,7 @@
             function _persistLocal() {
                 localStorage.setItem("cache-" + _settings.name, JSON.stringify(_settings));
             }
-        }
+        };
     }
 
     serviceCache.$inject = ["mCache", "$q"];
@@ -183,7 +182,7 @@
         }
 
         function _get(key) {
-            return cache.get(key)
+            return cache.get(key);
         }
 
         function _put(key, val, ttl) {

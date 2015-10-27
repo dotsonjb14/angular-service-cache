@@ -55,7 +55,7 @@ function cacheTests() {
         this.cache.put('TestItem-1', 'asdasasd');
 
         this.cache.remove(/TestData/);
-        this.cache.all().should.not.have.properties(["TestData-1", "TestData-2"])
+        this.cache.all().should.not.have.properties(["TestData-1", "TestData-2"]);
     });
 }
 
@@ -63,11 +63,11 @@ describe("mCache Tests", function () {
     var mCache = null;
 
     beforeEach(inject(function (_mCache_) {
-        mCache = _mCache_
+        mCache = _mCache_;
     }));
 
     it("inject mCache", function () {
-        mCache.should.not.be.undefined()
+        mCache.should.not.be.undefined();
     });
 
     it("mCache should expose all it's functions", function () {
@@ -163,7 +163,8 @@ describe("mCache Tests", function () {
                     }
                 };
 
-                Should(JSON.parse(localStorage.getItem("cache-cache"))).propertyByPath(["cache", "testData", "val"]).eql("my data")
+                Should(JSON.parse(localStorage.getItem("cache-cache")))
+                    .propertyByPath(["cache", "testData", "val"]).eql("my data");
 
                 c1.__killAll();
 
@@ -175,12 +176,12 @@ describe("mCache Tests", function () {
                 Should(c2.get("testData")).be.eql("my data");
 
                 setTimeout(function () {
-                    done()
+                    done();
                     Should(c2.get("testData")).be.undefined();
                 }, 320);
-            })
-        })
-    })
+            });
+        });
+    });
 });
 
 describe("serviceCache Tests", function () {
@@ -193,7 +194,7 @@ describe("serviceCache Tests", function () {
     }));
 
     it("inject serviceCache", function () {
-        serviceCache.should.not.be.undefined()
+        serviceCache.should.not.be.undefined();
     });
 
     describe("Main Tests", function () {
@@ -268,12 +269,12 @@ describe("serviceCache Tests", function () {
 
                 httpBackend.when("GET", 'currentDate.json')
                     .respond(function (method, url, data, headers, params) {
-                        return [200, {response: new Date()}]
+                        return [200, {response: new Date()}];
                     });
 
                 httpBackend.when("GET", 'currentDate2.json')
                     .respond(function (method, url, data, headers, params) {
-                        return [200, {response: new Date()}]
+                        return [200, {response: new Date()}];
                     });
             }));
 
@@ -324,7 +325,7 @@ describe("serviceCache Tests", function () {
                     data.should.not.be.null();
 
                     serviceCache.get('testData').should.be.exactly(data);
-                    done()
+                    done();
                 });
 
                 httpBackend.flush();
@@ -408,6 +409,6 @@ describe("serviceCache Tests", function () {
             });
 
 
-        })
+        });
     });
 });
