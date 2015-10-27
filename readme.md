@@ -11,8 +11,8 @@ The test website is located at localhost:8080/mocha.html once the service is run
 
 ## roadmap
 
-* global cache list
+* global cache list (done)
   Initializing a cache with an identifier should mean that the cache should be able to be re-used
   on a different page as long as you use the same identifier.
-* local storage persistance
+* local storage persistance (done)
   If a specific flag is set, persist changes to the cache to local storage. that way the cache survives a page reload
