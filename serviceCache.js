@@ -9,35 +9,102 @@
         .factory('serviceCache', serviceCache);
 
     function mCache() {
-        return function() {
+        var globalCache = {};
+
+        return function(ident) {
             var _cache = {};
+            var _settings = {};
+
+            initialize();
 
             return {
                 get: _get,
                 put: _put,
                 remove: _remove,
                 removeAll: _removeAll,
+                __killAll: __killAll,
+                __getGlobal: __getGlobal,
                 all: _all
             };
+
+            function initialize() {
+                var firstLoad = true;
+                if(typeof ident !== "undefined") {
+                    var name = "";
+                    if(typeof ident === "string") {
+                        name = ident;
+                    }
+                    else {
+                        name = ident.name;
+                    }
+
+                    if(typeof globalCache[name] !== "undefined") {
+                        firstLoad = false;
+                        _settings = globalCache[name];
+                        _cache = _settings.cache;
+                    }
+                    else {
+                        _settings = {
+                            cache: _cache,
+                            name: name
+                        };
+
+                        if(typeof ident === "object") {
+                            _settings.persistLocal = ident.persistLocal || false;
+                        }
+
+                        globalCache[name] = _settings;
+                    }
+                }
+
+                if(firstLoad && _settings.name !== "" && _settings.persistLocal === true) {
+                    var obj = localStorage.getItem("cache-" + _settings.name);
+
+                    if(obj !== null) {
+                        // we got a hit!
+                        _settings = JSON.parse(obj);
+                        _cache = _settings.cache;
+
+                        globalCache[_settings.name] = _settings;
+                    }
+                }
+            }
 
             function _all() {
                 return _cache;
             }
 
             function _get(key) {
-                return _cache[key];
+                var val = _cache[key];
+                if(typeof val !== "undefined") {
+                    debugger;
+                    if(val.expires != null && (new Date()).getTime() > val.expires) {
+                        delete _cache[key];
+                        return undefined;
+                    }
+
+                    return val.val;
+                }
+                else {
+                    return val;
+                }
             }
 
             function _put(key, val, ttl) {
-                _cache[key] = val;
                 if(typeof  ttl === 'undefined') {
-                    ttl = 0;
+                    ttl = null;
                 }
-                if(ttl > 0) {
-                    setTimeout(function () {
-                        _remove(key)
-                    }, ttl)
+                else {
+                    ttl = (new Date()).getTime() + ttl;
                 }
+                _cache[key] = {
+                    val: val,
+                    expires: ttl
+                };
+                if(_settings.persistLocal || false) {
+                    _persistLocal();
+                }
+
                 return this;
             }
 
@@ -54,11 +121,27 @@
                     delete _cache[key];
                 }
 
+                if(_settings.persistLocal || false) {
+                    _persistLocal();
+                }
+
                 return this;
             }
 
             function _removeAll() {
                 _cache = {}; // reset it
+            }
+
+            function __killAll() {
+                globalCache = {};
+            }
+
+            function __getGlobal() {
+                return globalCache;
+            }
+
+            function _persistLocal() {
+                localStorage.setItem("cache-" + _settings.name, JSON.stringify(_settings));
             }
         }
     }

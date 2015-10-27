@@ -1,6 +1,64 @@
 // load the module for ALL tests
 beforeEach(module('service-cache'));
 
+// generic cache testss. Should be run for each implementation or proxy
+function cacheTests() {
+    it("Test put and get", function () {
+        var data = 'asd2d3h1 2uk d';
+
+        this.cache.put('testData', data);
+
+        this.cache.get('testData').should.be.exactly(data);
+    });
+
+    it("Test remove", function () {
+        var data = 'asd2d3h1 2uk d';
+        this.cache.put('testData', data);
+        this.cache.get('testData').should.be.exactly(data);
+
+        this.cache.remove('testData');
+
+        Should(this.cache.get('testData')).be.undefined();
+    });
+    it("Chain put calls", function () {
+        this.cache
+            .put('test1', 'a')
+            .put('test2', 'b');
+
+        Should(this.cache.get("test1")).eql("a");
+        Should(this.cache.get("test2")).eql("b");
+    });
+    it("Chain remove calls", function () {
+        this.cache
+            .put('test1', 'a')
+            .put('test2', 'b');
+
+        this.cache
+            .remove('test1')
+            .remove('test2');
+
+        this.cache.all().should.eql({});
+    });
+
+    it("Test removeAll", function () {
+        this.cache.put('TestData-1', 'asdasasd');
+        this.cache.put('TestData-2', 'asdasasd');
+        this.cache.put('TestItem-1', 'asdasasd');
+
+        this.cache.removeAll();
+        this.cache.all().should.eql({});
+    });
+
+    it("Test remove by regex", function () {
+        this.cache.put('TestData-1', 'asdasasd');
+        this.cache.put('TestData-2', 'asdasasd');
+        this.cache.put('TestItem-1', 'asdasasd');
+
+        this.cache.remove(/TestData/);
+        this.cache.all().should.not.have.properties(["TestData-1", "TestData-2"])
+    });
+}
+
 describe("mCache Tests", function () {
     var mCache = null;
 
@@ -19,10 +77,13 @@ describe("mCache Tests", function () {
     });
 
     describe("Main Tests", function () {
-        var cache = null
+        var cache = null;
 
         beforeEach(function () {
             cache = mCache();
+            cache.__killAll();
+
+            this.cache = cache; // for shared tests
         });
 
         it("Initializing cache", function () {
@@ -33,63 +94,7 @@ describe("mCache Tests", function () {
             cache.all().should.be.eql({});
         });
 
-        it("Test put and get", function () {
-            var data = 'asd2d3h1 2uk d';
-
-            cache.put('testData', data);
-
-            cache.get('testData').should.be.exactly(data);
-        });
-
-        it("Test remove", function () {
-            var data = 'asd2d3h1 2uk d';
-            cache.put('testData', data);
-            cache.get('testData').should.be.exactly(data);
-
-            cache.remove('testData');
-
-            Should(cache.get('testData')).be.undefined();
-        });
-        it("Chain put calls", function () {
-            cache
-                .put('test1', 'a')
-                .put('test2', 'b');
-
-            cache.all().should.eql({
-                'test1': 'a',
-                'test2': 'b'
-            })
-        });
-        it("Chain remove calls", function () {
-            cache
-                .put('test1', 'a')
-                .put('test2', 'b');
-
-            cache
-                .remove('test1')
-                .remove('test2');
-
-            cache.all().should.eql({});
-        });
-
-        it("Test removeAll", function () {
-            cache.put('TestData-1', 'asdasasd');
-            cache.put('TestData-2', 'asdasasd');
-            cache.put('TestItem-1', 'asdasasd');
-
-            cache.removeAll();
-            cache.all().should.eql({});
-        });
-
-        it("Test remove by regex", function () {
-            cache.put('TestData-1', 'asdasasd');
-            cache.put('TestData-2', 'asdasasd');
-            cache.put('TestItem-1', 'asdasasd');
-
-            cache.remove(/TestData/);
-
-            cache.all().should.eql({'TestItem-1': 'asdasasd'});
-        });
+        cacheTests();
 
         describe("Test TTL", function () {
             it("Add item to cache with ttl", function () {
@@ -103,11 +108,79 @@ describe("mCache Tests", function () {
                 cache.put('testData', data, 300);
                 cache.get('testData').should.be.exactly(data);
                 setTimeout(function () {
-                    Should(cache.get('data')).be.undefined();
+                    debugger;
+                    Should(cache.get('testData')).be.undefined();
                     done();
                 }, 320);
             });
         });
+
+        describe("Test Global Cache", function () {
+            it("Test Seperate cache's don't collide", function () {
+                var c1 = mCache("cache1");
+                var c2 = mCache("cache2");
+
+                c1.put("testData", "data");
+                c2.put("testData", "new data");
+
+                c1.get("testData").should.eql("data");
+                c2.get("testData").should.eql("new data");
+            });
+
+            it("Two instances of the same cache should hold the same data", function () {
+                var data = "my test data";
+
+                var c1 = mCache("cache1");
+                var c2 = mCache({
+                    name: "cache1"
+                });
+
+                c1.put("testData", data);
+
+                Should(c2.get("testData")).eql(data);
+            });
+
+            it("Test __killAll function", function () {
+                var c1 = mCache("cache");
+                c1.__killAll();
+                var c2 = mCache("cache");
+
+                c1.put("testData", "data");
+                Should(c2.get("testDAta")).be.undefined();
+            });
+
+            it("Test local storage persistance", function (done) {
+                var c1 = mCache({
+                    name: "cache",
+                    persistLocal: true
+                });
+                c1.put("testData", "my data", 300);
+
+                var tempObj = {
+                    name:"cache",
+                    persistLocal: true,
+                    cache: {
+                        testData: "my data"
+                    }
+                };
+
+                Should(JSON.parse(localStorage.getItem("cache-cache"))).propertyByPath(["cache", "testData", "val"]).eql("my data")
+
+                c1.__killAll();
+
+                var c2 = mCache({
+                    name: "cache",
+                    persistLocal: true
+                });
+
+                Should(c2.get("testData")).be.eql("my data");
+
+                setTimeout(function () {
+                    done()
+                    Should(c2.get("testData")).be.undefined();
+                }, 320);
+            })
+        })
     })
 });
 
@@ -115,7 +188,9 @@ describe("serviceCache Tests", function () {
     var serviceCache = null;
 
     beforeEach(inject(function (_serviceCache_) {
-        serviceCache = _serviceCache_
+        serviceCache = _serviceCache_;
+
+        this.cache = serviceCache;
     }));
 
     it("inject serviceCache", function () {
@@ -170,127 +245,11 @@ describe("serviceCache Tests", function () {
                 }
             });
 
-            it("Test put and get", function () {
-                var data = 'asd2d3h1 2uk d';
-
-                serviceCache.put('testData', data);
-
-                serviceCache.get('testData').should.be.exactly(data);
-            });
-
-            it("Test remove", function () {
-                var data = 'asd2d3h1 2uk d';
-                serviceCache.put('testData', data);
-                serviceCache.get('testData').should.be.exactly(data);
-
-                serviceCache.remove('testData');
-
-                Should(serviceCache.get('testData')).be.undefined();
-            });
-
-            it("Chain put calls", function () {
-                serviceCache
-                    .put('test1', 'a')
-                    .put('test2', 'b');
-
-                serviceCache.all().should.eql({
-                    'test1': 'a',
-                    'test2': 'b'
-                })
-            });
-
-            it("Chain remove calls", function () {
-                serviceCache
-                    .put('test1', 'a')
-                    .put('test2', 'b');
-
-                serviceCache
-                    .remove('test1')
-                    .remove('test2');
-
-                serviceCache.all().should.eql({});
-            });
-
-            it("Test removeAll", function () {
-                serviceCache.put('TestData-1', 'asdasasd');
-                serviceCache.put('TestData-2', 'asdasasd');
-                serviceCache.put('TestItem-1', 'asdasasd');
-
-                serviceCache.removeAll();
-                serviceCache.all().should.eql({});
-            });
-
-            it("Test remove by regex", function () {
-                serviceCache.put('TestData-1', 'asdasasd');
-                serviceCache.put('TestData-2', 'asdasasd');
-                serviceCache.put('TestItem-1', 'asdasasd');
-
-                serviceCache.remove(/TestData/);
-
-                serviceCache.all().should.eql({'TestItem-1': 'asdasasd'});
-            });
+            cacheTests();
         });
 
         describe("Test cache proxies", function () {
-            it("Test put and get", function () {
-                var data = 'asd2d3h1 2uk d';
-
-                serviceCache.put('testData', data);
-
-                serviceCache.get('testData').should.be.exactly(data);
-            });
-
-            it("Test remove", function () {
-                var data = 'asd2d3h1 2uk d';
-                serviceCache.put('testData', data);
-                serviceCache.get('testData').should.be.exactly(data);
-
-                serviceCache.remove('testData');
-
-                Should(serviceCache.get('testData')).be.undefined();
-            });
-
-            it("Chain put calls", function () {
-                serviceCache
-                    .put('test1', 'a')
-                    .put('test2', 'b');
-
-                serviceCache.all().should.eql({
-                    'test1': 'a',
-                    'test2': 'b'
-                })
-            });
-
-            it("Chain remove calls", function () {
-                serviceCache
-                    .put('test1', 'a')
-                    .put('test2', 'b');
-
-                serviceCache
-                    .remove('test1')
-                    .remove('test2');
-
-                serviceCache.all().should.eql({});
-            });
-
-            it("Test removeAll", function () {
-                serviceCache.put('TestData-1', 'asdasasd');
-                serviceCache.put('TestData-2', 'asdasasd');
-                serviceCache.put('TestItem-1', 'asdasasd');
-
-                serviceCache.removeAll();
-                serviceCache.all().should.eql({});
-            });
-
-            it("Test remove by regex", function () {
-                serviceCache.put('TestData-1', 'asdasasd');
-                serviceCache.put('TestData-2', 'asdasasd');
-                serviceCache.put('TestItem-1', 'asdasasd');
-
-                serviceCache.remove(/TestData/);
-
-                serviceCache.all().should.eql({'TestItem-1': 'asdasasd'});
-            });
+            cacheTests();
         });
 
         describe("Test serviceCache run", function () {
