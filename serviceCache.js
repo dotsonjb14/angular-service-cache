@@ -77,7 +77,6 @@
             function _get(key) {
                 var val = _cache[key];
                 if(typeof val !== "undefined") {
-                    debugger;
                     if(val.expires != null && (new Date()).getTime() > val.expires) {
                         delete _cache[key];
                         return undefined;

@@ -108,7 +108,6 @@ describe("mCache Tests", function () {
                 cache.put('testData', data, 300);
                 cache.get('testData').should.be.exactly(data);
                 setTimeout(function () {
-                    debugger;
                     Should(cache.get('testData')).be.undefined();
                     done();
                 }, 320);
