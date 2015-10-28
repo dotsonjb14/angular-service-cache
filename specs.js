@@ -129,10 +129,10 @@ describe("mCache Tests", function () {
             it("Two instances of the same cache should hold the same data", function () {
                 var data = "my test data";
 
-                var c1 = mCache("cache1");
                 var c2 = mCache({
                     name: "cache1"
                 });
+                var c1 = mCache("cache1");
 
                 c1.put("testData", data);
 
@@ -148,6 +148,17 @@ describe("mCache Tests", function () {
                 Should(c2.get("testDAta")).be.undefined();
             });
 
+            it("Test local storage remove", function () {
+                var c1 = mCache({
+                    name: "cache",
+                    persistLocal: true
+                });
+                c1.put('testData', 'asd');
+                c1.remove('testData');
+
+                c1.all().should.eql({});
+            });
+
             it("Test local storage persistance", function (done) {
                 var c1 = mCache({
                     name: "cache",
@@ -156,7 +167,7 @@ describe("mCache Tests", function () {
                 c1.put("testData", "my data", 300);
 
                 var tempObj = {
-                    name:"cache",
+                    name: "cache",
                     persistLocal: true,
                     cache: {
                         testData: "my data"
@@ -223,9 +234,9 @@ describe("serviceCache Tests", function () {
                 }
 
                 function _remove(key) {
-                    if(key instanceof RegExp) {
-                        for(var k in _cache) {
-                            if(key.test(k)) {
+                    if (key instanceof RegExp) {
+                        for (var k in _cache) {
+                            if (key.test(k)) {
                                 delete _cache[k];
                             }
                         }

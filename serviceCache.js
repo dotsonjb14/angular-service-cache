@@ -23,7 +23,6 @@
                 remove: _remove,
                 removeAll: _removeAll,
                 __killAll: __killAll,
-                __getGlobal: __getGlobal,
                 all: _all
             };
 
@@ -132,10 +131,6 @@
 
             function __killAll() {
                 globalCache = {};
-            }
-
-            function __getGlobal() {
-                return globalCache;
             }
 
             function _persistLocal() {
