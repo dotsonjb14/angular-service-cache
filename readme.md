@@ -1,5 +1,7 @@
 # serviceCache
 
+[![Build Status](https://travis-ci.org/dotsonjb14/angular-service-cache.svg?branch=master)](https://travis-ci.org/dotsonjb14/angular-service-cache)
+
 serviceCache is a library for caching the results from services, as well as a generic cache library.
 
 Installation can done with bower `bower install angular-service-cache` and then the js file added to your index.
